@@ -1,0 +1,19 @@
+﻿@page "/dashboard"
+<SecureRoute />
+
+<h3>لوحة التحكم</h3>
+<div class="grid">
+    <a class="card btn" href="/clients/new">➕ إضافة زبون جديد</a>
+    <a class="card btn" href="/receipts/new">🧾 إضافة وصل زبون</a>
+    <a class="card btn" href="/reports">📊 التقارير</a>
+</div>
+
+<div style="margin-top:16px">
+    <a class="btn" @onclick="Logout">تسجيل الخروج</a>
+</div>
+
+@code {
+    [Inject] cleancityApp.Services.AuthService Auth { get; set; } = default!;
+    [Inject] NavigationManager Nav { get; set; } = default!;
+    async Task Logout(){ await Auth.LogoutAsync(); Nav.NavigateTo("/login"); }
+}

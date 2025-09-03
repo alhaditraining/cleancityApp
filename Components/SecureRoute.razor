@@ -1,0 +1,22 @@
+﻿@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Authorization
+@inject NavigationManager Navigation
+@attribute [Authorize]
+
+<AuthorizeView>
+    <Authorized>
+        @ChildContent
+    </Authorized>
+    <NotAuthorized>
+        @code {
+            protected override void OnInitialized()
+            {
+                Navigation.NavigateTo("/login");
+            }
+        }
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}

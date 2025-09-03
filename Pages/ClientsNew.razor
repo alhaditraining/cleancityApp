@@ -1,0 +1,24 @@
+﻿@page "/clients/new"
+<SecureRoute />
+
+<h3>إضافة زبون جديد</h3>
+<div class="card">
+    <div class="grid" style="grid-template-columns:1fr 1fr;">
+        <input @bind="client.Name" placeholder="الاسم الكامل" />
+        <input @bind="client.Phone" placeholder="رقم الهاتف" />
+        <input @bind="client.City" placeholder="المدينة" />
+        <input @bind="client.NationalId" placeholder="الرقم الوطني (اختياري)" />
+    </div>
+    <div style="margin-top:12px">
+        <a class="btn" @onclick="Save">حفظ</a>
+        <a class="btn" href="/dashboard">رجوع</a>
+    </div>
+    @if (saved) { <p style="color:#166534;margin-top:8px">تم الحفظ (تجريبي)</p> }
+</div>
+
+@code {
+    class ClientVm { public string Name=""; public string Phone=""; public string City=""; public string? NationalId; }
+    ClientVm client = new();
+    bool saved = false;
+    Task Save(){ saved=true; return Task.CompletedTask; } // تجريبي
+}

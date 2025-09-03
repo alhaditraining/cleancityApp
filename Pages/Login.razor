@@ -1,0 +1,186 @@
+﻿@page "/login"
+@using Microsoft.AspNetCore.WebUtilities
+@inject NavigationManager Nav
+@inject cleancityApp.Services.AuthService Auth
+
+<div class="auth-wrap">
+    <div class="auth-card">
+        <div class="auth-header">
+            <div class="logo">🧾</div>
+            <div>
+                <h2>تسجيل الدخول</h2>
+                <p class="muted">نسخة تجريبية — يمكنك استخدام حساب المدير الافتراضي.</p>
+            </div>
+        </div>
+
+        <div class="form">
+            <label>اسم المستخدم</label>
+            <input @bind="username" placeholder="admin" />
+
+            <label>كلمة المرور</label>
+            <input @bind="password" type="password" placeholder="admin" />
+        </div>
+
+        <div class="actions">
+            <a class="btn btn-primary" @onclick="() => DoLogin()">
+                دخول
+            </a>
+            <a class="btn btn-ghost"
+               @onclick="@(async () => await DoLogin("quick"))">
+                دخول سريع كمديري        </a>
+        </div>
+
+        @if (!string.IsNullOrEmpty(error))
+        {
+            <p class="error">@error</p>
+        }
+
+        <p class="hint">تلميح: اترك الحقول فارغة أو اكتب <b>admin / admin</b> ثم اضغط دخول.</p>
+    </div>
+</div>
+
+<style>
+    .auth-wrap {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+        background: linear-gradient(180deg,#f7f7f7,#f0f0f0);
+    }
+
+    .auth-card {
+        width: 100%;
+        max-width: 460px;
+        background: #fff;
+        border: 1px solid #e5e7eb;
+        border-radius: 14px;
+        padding: 20px 20px 16px;
+        box-shadow: 0 6px 24px rgba(0,0,0,.08);
+    }
+
+    .auth-header {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        margin-bottom: 12px;
+    }
+
+        .auth-header .logo {
+            width: 44px;
+            height: 44px;
+            display: grid;
+            place-items: center;
+            border-radius: 10px;
+            background: #f3f4f6;
+            font-size: 22px;
+        }
+
+    h2 {
+        margin: 0 0 2px 0;
+        font-weight: 700;
+    }
+
+    .muted {
+        margin: 0;
+        color: #6b7280;
+        font-size: 13px;
+    }
+
+    .form {
+        display: grid;
+        gap: 8px;
+        margin: 12px 0 6px;
+    }
+
+    label {
+        font-size: 13px;
+        color: #374151;
+    }
+
+    input {
+        padding: 10px 12px;
+        border: 1px solid #e5e7eb;
+        border-radius: 10px;
+        background: #f9fafb;
+        outline: none;
+    }
+
+        input:focus {
+            border-color: #9ca3af;
+            background: #fff;
+        }
+
+    .actions {
+        display: flex;
+        gap: 8px;
+        margin-top: 10px;
+    }
+
+    .btn {
+        padding: 10px 14px;
+        border-radius: 10px;
+        border: 1px solid #e5e7eb;
+        text-decoration: none;
+        cursor: pointer;
+        display: inline-block;
+    }
+
+        .btn:hover {
+            background: #f9fafb;
+        }
+
+    .btn-primary {
+        background: #111827;
+        color: #fff;
+        border-color: #111827;
+    }
+
+        .btn-primary:hover {
+            filter: brightness(1.04);
+        }
+
+    .btn-ghost {
+        background: #fff;
+    }
+
+    .error {
+        color: #b91c1c;
+        margin: 10px 0 0;
+    }
+
+    .hint {
+        color: #6b7280;
+        font-size: 12px;
+        margin: 8px 0 0;
+    }
+</style>
+
+@code {
+    // افتراضيًا: قيم admin حتى لو كانت الحقول فارغة
+    string username = "admin";
+    string password = "admin";
+    string error = "";
+
+    async Task DoLogin(string mode = "normal")
+    {
+        // زر الدخول السريع يفرض admin/admin
+        if (mode == "quick")
+        {
+            username = "admin";
+            password = "admin";
+        }
+
+        // لو المستخدِم مسح الحقول، نرجع للإفتراضيات
+        if (string.IsNullOrWhiteSpace(username)) username = "admin";
+        if (string.IsNullOrWhiteSpace(password)) password = "admin";
+
+        await Auth.LoginAsync(username, password);
+
+        // قراءة returnUrl بشكل آمن، والافتراضي "dashboard" (نسبي)
+        var uri = new Uri(Nav.Uri);
+        var q = QueryHelpers.ParseQuery(uri.Query);
+        var returnUrl = q.TryGetValue("returnUrl", out var v) ? v.ToString() : "dashboard";
+        Nav.NavigateTo(returnUrl);
+    }
+}

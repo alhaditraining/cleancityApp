@@ -1,0 +1,25 @@
+﻿@page "/receipts/new"
+@using Microsoft.AspNetCore.Components.Forms
+<SecureRoute />
+
+<h3>إضافة وصل زبون</h3>
+<div class="card">
+    <div class="grid" style="grid-template-columns:1fr 1fr;">
+        <input @bind="receipt.ClientName" placeholder="اسم الزبون" />
+        <InputDate @bind-Value="receipt.Date" />
+        <input @bind="receipt.Amount" type="number" placeholder="المبلغ" />
+        <input @bind="receipt.Note" placeholder="ملاحظات (اختياري)" />
+    </div>
+    <div style="margin-top:12px">
+        <a class="btn" @onclick="Save">حفظ</a>
+        <a class="btn" href="/dashboard">رجوع</a>
+    </div>
+    @if (saved) { <p style="color:#166534;margin-top:8px">تم الحفظ (تجريبي)</p> }
+</div>
+
+@code {
+    class ReceiptVm { public string ClientName=""; public DateTime Date=DateTime.UtcNow.Date; public decimal Amount; public string? Note; }
+    ReceiptVm receipt = new();
+    bool saved=false;
+    Task Save(){ saved=true; return Task.CompletedTask; } // تجريبي
+}
